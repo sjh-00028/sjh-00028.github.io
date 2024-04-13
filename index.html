@@ -18,7 +18,7 @@
 
                 if (window.location.search !== "") {
                     let params = new URLSearchParams(window.location.search);
-                    let searchingWord = params.get("word").trim().toLowerCase();
+                    let searchingWord = params.get("word").trim();
 
                     if (searchingWord != null)
                         showWord(searchingWord);
@@ -26,11 +26,11 @@
             });
 
             function showWord(word) {
-                let wordEntries = words[word];
+                let wordEntries = words[word] || words[word.toLowerCase()];
 
                 while (wordEntries != null && wordEntries.length === 1 && typeof(wordEntries[0]) === "string") { // Alias
                     word = wordEntries[0];
-                    wordEntries = words[word];
+                    wordEntries = words[word] || words[word.toLowerCase()];
                 }
 
                 if (wordEntries == null) {
