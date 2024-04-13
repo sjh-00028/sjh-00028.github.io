@@ -2,9 +2,80 @@
 
 <html>
     <head>
-        
+        <script>
+            var words;
+
+            window.addEventListener("load", async () => {
+                const wordsUrl = "https://sjh-00028.github.io/words.json";
+                const wordsCache = await caches.open("words-cache");
+
+                wordsCache.add(wordsUrl);
+
+                let response = await wordsCache.match(wordsUrl);
+                words = await response.json();
+
+                if (window.location.search !== "") {
+                    let params = new URLSearchParams(window.location.search);
+                    let searchingWord = params.get("word");
+
+                    if (searchingWord != null)
+                        showWord(searchingWord);
+                }
+            });
+
+            function showWord(word) {
+                let wordInfo = words[word];
+                if (typeof(wordInfo) === "string") { // Alias
+                    word = wordInfo;
+                    wordInfo = words[word];
+                }
+
+                if (wordInfo == null) {
+                    let errorElement = document.getElementById("error");
+
+                    error.innerHTML = "'" + word + "' not found";
+                    error.style.display = "unset";
+                    return;
+                }
+
+                let definitionsList = document.getElementById("definitions");
+
+                document.getElementById("word").innerHTML = word;
+
+                for (const def of wordInfo.Definitions) {
+                    let listItem = document.createElement("li");
+
+                    listItem.innerHTML = def;
+                    definitionsList.appendChild(listItem);
+                }
+
+                if (wordInfo.Forms !== undefined) {
+                    let formsList = document.getElementById("forms");
+
+                    for (const form of wordInfo.Forms) {
+                        let listItem = document.createElement("li");
+
+                        listItem.innerHTML = form;
+                        formsList.appendChild(listItem);
+                    }
+                }
+
+                document.getElementById("wordInfo").style.display = "unset";
+            }
+        </script>
     </head>
     <body>
+        <form action="index.html" method="get">
+            <input type="text" name="word" />
+            <input type="submit" value="Go" />
+        </form>
         
+        <div id="wordInfo" style="display: none">
+            <h1 id="word"></h1>
+            <ul id="definitions"></ul>
+            <h3>Other forms</h2>
+            <ul id="forms"></ul>
+        </div>
+        <h1 id="error" style="display: none"></h1>
     </body>
 </html>
