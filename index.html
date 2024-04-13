@@ -27,7 +27,7 @@
 
             function showWord(word) {
                 let wordInfo = words[word];
-                if (typeof(wordInfo) === "string") { // Alias
+                while (typeof(wordInfo) === "string") { // Alias
                     word = wordInfo;
                     wordInfo = words[word];
                 }
