@@ -49,6 +49,7 @@
 
             function constructWordView(wordName, wordInfo) {
                 let wordDiv = document.createElement("div");
+                wordDiv.className = "wordEntry";
 
                 let wordHeader = document.createElement("h1");
                 wordHeader.innerText = wordName;
@@ -91,6 +92,24 @@
                 return wordDiv;
             }
         </script>
+
+        <style>
+            .wordEntry {
+                background-color:aliceblue;
+                border-radius: 20px;
+                padding-left: 10px;
+                padding-bottom: 1px;
+                margin-top: 20px;
+            }
+
+            h1,h3 {
+                margin: 0px;
+            }
+
+            ul {
+                margin:0px 0px 15px 0px;
+            }
+        </style>
     </head>
     <body>
         <form action="index.html" method="get" style="display: flex">
