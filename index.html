@@ -2,6 +2,8 @@
 
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
         <script>
             var words;
 
@@ -65,9 +67,9 @@
         </script>
     </head>
     <body>
-        <form action="index.html" method="get">
-            <input type="text" name="word" />
-            <input type="submit" value="Go" />
+        <form action="index.html" method="get" style="display: flex">
+            <input type="text" name="word" style="width: 80%"/>
+            <input type="submit" value="Go" style="flex-grow: 1;margin-left:3px;"/>
         </form>
         
         <div id="wordInfo" style="display: none">
