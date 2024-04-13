@@ -18,7 +18,7 @@
 
                 if (window.location.search !== "") {
                     let params = new URLSearchParams(window.location.search);
-                    let searchingWord = params.get("word").trim();
+                    let searchingWord = params.get("word").trim().toLowerCase();
 
                     if (searchingWord != null)
                         showWord(searchingWord);
