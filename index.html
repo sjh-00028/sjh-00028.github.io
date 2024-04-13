@@ -26,13 +26,14 @@
             });
 
             function showWord(word) {
-                let wordInfo = words[word];
-                while (typeof(wordInfo) === "string") { // Alias
-                    word = wordInfo;
-                    wordInfo = words[word];
+                let wordEntries = words[word];
+
+                while (wordEntries != null && wordEntries.length === 1 && typeof(wordEntries[0]) === "string") { // Alias
+                    word = wordEntries[0];
+                    wordEntries = words[word];
                 }
 
-                if (wordInfo == null) {
+                if (wordEntries == null) {
                     let errorElement = document.getElementById("error");
 
                     error.innerHTML = "'" + word + "' not found";
@@ -40,10 +41,30 @@
                     return;
                 }
 
-                let definitionsList = document.getElementById("definitions");
+                let infoElement = document.getElementById("wordInfo");
+                for (var entry of wordEntries) {
+                    infoElement.appendChild(constructWordView(word, entry));
+                }
+            }
 
-                document.getElementById("word").innerHTML = word;
+            function constructWordView(wordName, wordInfo) {
+                let wordDiv = document.createElement("div");
 
+                let wordHeader = document.createElement("h1");
+                wordHeader.innerText = wordName;
+                wordDiv.appendChild(wordHeader);
+                
+                if (typeof(wordInfo) === "string") { // Link to another word
+                    let link = document.createElement("a");
+                    
+                    link.href = "?word=" + wordInfo;
+                    link.innerText = "Form of " + wordInfo;
+                    wordDiv.appendChild(link);
+                    return wordDiv;
+                }
+                
+                let definitionsList = document.createElement("ul");
+                wordDiv.appendChild(definitionsList);
                 for (const def of wordInfo.Definitions) {
                     let listItem = document.createElement("li");
 
@@ -52,8 +73,13 @@
                 }
 
                 if (wordInfo.Forms !== undefined) {
-                    let formsList = document.getElementById("forms");
+                    let otherFormsHeader = document.createElement("h3");
+                    let formsList = document.createElement("ul");
 
+                    otherFormsHeader.innerText = "Other forms";
+                    wordDiv.appendChild(otherFormsHeader);
+
+                    wordDiv.appendChild(formsList);
                     for (const form of wordInfo.Forms) {
                         let listItem = document.createElement("li");
 
@@ -62,7 +88,7 @@
                     }
                 }
 
-                document.getElementById("wordInfo").style.display = "unset";
+                return wordDiv;
             }
         </script>
     </head>
@@ -72,12 +98,7 @@
             <input type="submit" value="Go" style="flex-grow: 1;margin-left:3px;"/>
         </form>
         
-        <div id="wordInfo" style="display: none">
-            <h1 id="word"></h1>
-            <ul id="definitions"></ul>
-            <h3>Other forms</h2>
-            <ul id="forms"></ul>
-        </div>
+        <div id="wordInfo"> </div>
         <h1 id="error" style="display: none"></h1>
     </body>
 </html>
