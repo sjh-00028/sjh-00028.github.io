@@ -20,5 +20,5 @@ self.addEventListener("message", async e => {
     }
 
     e.ports[0].start();
-    e.ports[0].postMessage(wordEntries);
+    e.ports[0].postMessage({word: word, entries: wordEntries});
 });

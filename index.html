@@ -18,7 +18,7 @@
                         const word = params.get("word");
 
                         channel.port1.addEventListener("message", e => {
-                            showWord(word, e.data);
+                            showWord(e.data.word, e.data.entries);
                         });
                         
                         if (word != null) {
