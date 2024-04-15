@@ -73,12 +73,23 @@
             }
 
             function createList(items) {
+                const formOfRegex = /(inflection of |form of )(\p{Letter}+)/iu;
                 const list = document.createElement("ul");
 
                 for (let item of items) {
                     const itemElement = document.createElement("li");
+                    const formOfMatches = item.match(formOfRegex);
 
-                    itemElement.innerText = item;
+                    if (formOfMatches !== null) {
+                        const link = document.createElement("a");
+
+                        link.href = "?word=" + encodeURIComponent(formOfMatches[2]);
+                        link.innerText = item;
+                        itemElement.appendChild(link);
+                    } else {
+                        itemElement.innerText = item;
+                    }
+
                     list.append(itemElement);
                 }
 
