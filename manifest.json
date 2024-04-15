@@ -1,0 +1,11 @@
+{
+    "name": "French Dictionary",
+    "start_url": ".",
+    "display": "fullscreen",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "48x48"
+        }
+    ]
+}
