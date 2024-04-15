@@ -45,9 +45,26 @@
                 let wordDiv = document.createElement("div");
                 wordDiv.className = "wordEntry";
 
+                if (wordInfo.article !== undefined) {
+                    let article = document.createElement("p");
+
+                    article.className = "article";
+                    article.innerText = wordInfo.article;
+                    wordDiv.appendChild(article);
+                }
+
                 let wordHeader = document.createElement("h1");
                 wordHeader.innerText = wordName;
+                wordHeader.style.display = "inline";
                 wordDiv.appendChild(wordHeader);
+
+                if (wordInfo.ipa !== undefined) {
+                    let ipa = document.createElement("p");
+
+                    ipa.className = "ipa";
+                    ipa.innerHTML = "<b>IPA: </b>" + wordInfo.ipa;
+                    wordDiv.appendChild(ipa);
+                }
                 
                 if (typeof(wordInfo) === "string") { // Link to another word
                     let link = document.createElement("a");
@@ -104,6 +121,16 @@
                 padding-left: 10px;
                 padding-bottom: 1px;
                 margin-top: 20px;
+            }
+
+            .article {
+                display: inline;
+                margin-right: 5px;
+                font-weight: bold;
+            }
+
+            .ipa {
+                margin: 0px;
             }
 
             h1,h3 {
