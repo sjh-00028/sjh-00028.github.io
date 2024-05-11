@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="manifest.json" />
+
+        <script>
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/spanish/service-worker.js", {
+                    scope: "/spanish/"
+                });
+
+                navigator.serviceWorker.ready.then(async reg => {
+                    if (window.location.search !== "") {
+                        const channel = new MessageChannel();
+                        const params = new URLSearchParams(window.location.search);
+                        const word = params.get("word");
+
+                        channel.port1.addEventListener("message", e => {
+                            showWord(e.data.word, e.data.entries);
+                        });
+                        
+                        if (word != null) {
+                            channel.port1.start();
+                            reg.active.postMessage(word.trim(), [channel.port2]);
+                        }
+                    }
+                });
+            });
+
+            function showWord(wordName, wordEntries) {
+                let infoElement = document.getElementById("wordInfo");
+
+                if (wordEntries == null) {
+                    infoElement.innerHTML = "<h1>'" + wordName + "' not found";
+                    return;
+                }
+
+                for (var entry of wordEntries) {
+                    infoElement.appendChild(constructWordView(wordName, entry));
+                }
+            }
+
+            function constructWordView(wordName, wordInfo) {
+                let wordDiv = document.createElement("div");
+                wordDiv.className = "wordEntry";
+
+                if (wordInfo.article !== undefined) {
+                    let article = document.createElement("p");
+
+                    article.className = "article";
+                    article.innerText = wordInfo.article;
+                    wordDiv.appendChild(article);
+                }
+
+                let wordHeader = document.createElement("h1");
+                wordHeader.innerText = wordName;
+                wordHeader.style.display = "inline";
+                wordDiv.appendChild(wordHeader);
+
+                if (wordInfo.ipa !== undefined) {
+                    let ipa = document.createElement("p");
+
+                    ipa.className = "ipa";
+                    ipa.innerHTML = "<b>IPA: </b>" + wordInfo.ipa;
+                    wordDiv.appendChild(ipa);
+                }
+                
+                if (typeof(wordInfo) === "string") { // Link to another word
+                    let link = document.createElement("a");
+                    
+                    link.href = "?word=" + wordInfo;
+                    link.innerText = "Form of " + wordInfo;
+                    wordDiv.appendChild(link);
+                    return wordDiv;
+                }
+                
+                wordDiv.appendChild(createList(wordInfo.Definitions));
+
+                if (wordInfo.Forms !== undefined) {
+                    let otherFormsHeader = document.createElement("h3");
+
+                    otherFormsHeader.innerText = "Other forms";
+                    wordDiv.appendChild(otherFormsHeader);
+
+                    wordDiv.appendChild(createList(wordInfo.Forms));
+                }
+
+                return wordDiv;
+            }
+
+            function createList(items) {
+                const formOfRegex = /(inflection of |form of )(\p{Letter}+)/iu;
+                const list = document.createElement("ul");
+
+                for (let item of items) {
+                    const itemElement = document.createElement("li");
+                    const formOfMatches = item.match(formOfRegex);
+
+                    if (formOfMatches !== null) {
+                        const link = document.createElement("a");
+
+                        link.href = "?word=" + encodeURIComponent(formOfMatches[2]);
+                        link.innerText = item;
+                        itemElement.appendChild(link);
+                    } else {
+                        itemElement.innerText = item;
+                    }
+
+                    list.append(itemElement);
+                }
+
+                return list;
+            }
+        </script>
+
+        <style>
+            .wordEntry {
+                background-color:aliceblue;
+                border-radius: 20px;
+                padding-left: 10px;
+                padding-bottom: 1px;
+                margin-top: 20px;
+            }
+
+            .article {
+                display: inline;
+                margin-right: 5px;
+                font-weight: bold;
+            }
+
+            .ipa {
+                margin: 0px;
+            }
+
+            h1,h3 {
+                margin: 0px;
+            }
+
+            ul {
+                margin:0px 0px 15px 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="index.html" method="get" style="display: flex">
+            <input type="text" name="word" style="width: 80%"/>
+            <input type="submit" value="Go" style="flex-grow: 1;margin-left:3px;"/>
+        </form>
+        
+        <div id="wordInfo"></div>
+    </body>
+</html>
