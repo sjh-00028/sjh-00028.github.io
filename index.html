@@ -8,7 +8,7 @@
         <script>
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("/service-worker.js", {
-                    scope: "/"
+                    scope: "/index"
                 });
 
                 navigator.serviceWorker.ready.then(async reg => {
@@ -50,7 +50,7 @@
                     let article = document.createElement("p");
 
                     article.className = "article";
-                    article.innerText = wordInfo.article;
+                    article.innerText = (wordInfo.article == 0) ? "le" : (wordInfo.article == 1) ? "la" : (wordInfo.article == 2) ? "le, la" : "??";
                     wordDiv.appendChild(article);
                 }
 
@@ -91,7 +91,7 @@
             }
 
             function createList(items) {
-                const formOfRegex = /(inflection of |form of )(\p{Letter}+)/iu;
+                const formOfRegex = /(inflection of |form of |see )([\p{Letter} ]+)/iu;
                 const list = document.createElement("ul");
 
                 for (let item of items) {
@@ -144,7 +144,7 @@
         </style>
     </head>
     <body>
-        <form action="index.html" method="get" style="display: flex">
+        <form action="index.html" method="get" accept-charset="utf-8" style="display: flex">
             <input type="text" name="word" style="width: 80%" autofocus/>
             <input type="submit" value="Go" style="flex-grow: 1;margin-left:3px;"/>
         </form>
