@@ -120,8 +120,27 @@
         </script>
 
         <style>
+            :root {
+                color-scheme: light dark;
+            }
+            
+            @media (prefers-color-scheme: light) {
+                .wordEntry {
+                    background-color: aliceblue;
+                }
+            }
+            
+            @media (prefers-color-scheme: dark) {
+                .wordEntry {
+                    background-color: color-mix(in srgb, Canvas, white 10%);
+                }
+                
+                a {
+                    color: AccentColor;
+                }
+            }
+            
             .wordEntry {
-                background-color:aliceblue;
                 border-radius: 20px;
                 padding-left: 10px;
                 padding-bottom: 1px;
