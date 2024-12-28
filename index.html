@@ -28,6 +28,10 @@
                     }
                 });
             });
+            
+            window.onfocus = () => {
+                document.getElementById("wordInput").focus()
+            };
 
             function showWord(wordName, wordEntries) {
                 let infoElement = document.getElementById("wordInfo");
@@ -145,7 +149,7 @@
     </head>
     <body>
         <form action="index.html" method="get" accept-charset="utf-8" style="display: flex">
-            <input type="text" name="word" style="width: 80%" autofocus/>
+            <input type="text" name="word" style="width: 80%" id="wordInput" autofocus/>
             <input type="submit" value="Go" style="flex-grow: 1;margin-left:3px;"/>
         </form>
         
