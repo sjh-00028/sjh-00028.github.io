@@ -54,7 +54,7 @@
                     let article = document.createElement("p");
 
                     article.className = "article";
-                    article.innerText = (wordInfo.article == 0) ? "le" : (wordInfo.article == 1) ? "la" : (wordInfo.article == 2) ? "le, la" : "??";
+                    article.innerText = wordInfo.article;
                     wordDiv.appendChild(article);
                 }
 
@@ -80,15 +80,15 @@
                     return wordDiv;
                 }
                 
-                wordDiv.appendChild(createList(wordInfo.Definitions));
+                wordDiv.appendChild(createList(wordInfo.definitions));
 
-                if (wordInfo.Forms !== undefined) {
+                if (wordInfo.forms.length > 0) {
                     let otherFormsHeader = document.createElement("h3");
 
                     otherFormsHeader.innerText = "Other forms";
                     wordDiv.appendChild(otherFormsHeader);
 
-                    wordDiv.appendChild(createList(wordInfo.Forms));
+                    wordDiv.appendChild(createList(wordInfo.forms));
                 }
 
                 return wordDiv;
