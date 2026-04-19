@@ -4,57 +4,35 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="manifest" href="manifest.json" />
+        <script src="dictionary.js"></script>
 
         <script>
             window.addEventListener("load", () => {
-                navigator.serviceWorker.register("/service-worker.js", {
-                    scope: "/index"
-                });
+                const params = new URLSearchParams(window.location.search);
+                const word = params.get("word").trim();
+                
+                if (word != null) {
+                    searchDictionary(word, true).then(result => {
+                        showWord(result.word, result.entries);
+                    });
+                }
 
-                navigator.serviceWorker.ready.then(async reg => {
-                    if (window.location.search !== "") {
-                        const channel = new MessageChannel();
-                        const params = new URLSearchParams(window.location.search);
-                        const word = params.get("word");
-
-                        channel.port1.addEventListener("message", e => {
-                            if (e.data.action === "exact") {
-                                showWord(e.data.word, e.data.entries);
-                            }
-                        });
-                        
-                        if (word != null) {
-                            channel.port1.start();
-                            reg.active.postMessage({action: "exact", word: word.trim()}, [channel.port2]);
-                        }
+                document.getElementById("wordInput").addEventListener("input", async e => {
+                    var searchValue = e.target.value.trim();
+                    var infoElement = document.getElementById("wordInfo");
+                    
+                    if (searchValue == "") {
+                        infoElement.innerHTML = "";
+                        return;
                     }
 
-                    document.getElementById("wordInput").addEventListener("input", async e => {
-                        var searchValue = e.target.value.trim();
-                        var infoElement = document.getElementById("wordInfo");
-                        
-                        if (searchValue == "") {
-                            infoElement.innerHTML = "";
-                            return;
+                    searchDictionary(searchValue, false).then(results => {
+                        infoElement.innerHTML = "";
+                        for (let result of results) {
+                            showWord(result.word, result.entries);
                         }
 
-                        return new Promise((resolve, reject) => {
-                            const channel = new MessageChannel();
-
-                            channel.port1.addEventListener("message", e => {
-                                if (e.data.action === "search") {
-                                    infoElement.innerHTML = "";
-                                    for (let result of e.data.words) {
-                                        showWord(result.word, result.entries);
-                                    }
-
-                                    resolve()
-                                }
-                            });
-
-                            channel.port1.start()
-                            reg.active.postMessage({action: "search", word: searchValue}, [channel.port2]);
-                        });
+                        resolve()
                     });
                 });
             });
@@ -200,7 +178,7 @@
     </head>
     <body>
         <form action="index.html" method="get" accept-charset="utf-8" style="display: flex">
-            <input type="text" name="word" style="width: 80%" id="wordInput" autofocus/>
+            <input type="text" name="word" style="width: 80%" id="wordInput" autocomplete="off" autofocus/>
             <input type="submit" value="Go" style="flex-grow: 1;margin-left:3px;"/>
         </form>
         

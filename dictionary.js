@@ -97,6 +97,7 @@ function searchWord(word) {
         let currentWord = readString(current + 16)
         if (found.has(currentWord))
             break
+
         if (currentWord.toLowerCase().startsWith(word.toLowerCase())) {
             while (true) {
                 let previous = dataView.getUint32(current);
@@ -133,15 +134,12 @@ const loadPromise = caches.open("words-cache").then(async wordsCache => {
     dataView = new DataView(buffer)
 });
 
-self.addEventListener("message", async e => {
+async function searchDictionary(word, exactSearch) {
     await loadPromise;
 
-    let word = e.data.word;
-    if (e.data.action == "exact") {
-        e.ports[0].postMessage({action: "exact", word: word, entries: findEntry(word)});
-    } else if (e.data.action == "search") {
-        e.ports[0].postMessage({action: "search", words: searchWord(word)});
+    if (exactSearch) {
+        return {word: word, entries: findEntry(word)};
+    } else {
+        return searchWord(word)
     }
-
-    e.ports[0].start();
-});
+}
