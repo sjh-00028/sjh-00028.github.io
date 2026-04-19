@@ -18,14 +18,44 @@
                         const word = params.get("word");
 
                         channel.port1.addEventListener("message", e => {
-                            showWord(e.data.word, e.data.entries);
+                            if (e.data.action === "exact") {
+                                showWord(e.data.word, e.data.entries);
+                            }
                         });
                         
                         if (word != null) {
                             channel.port1.start();
-                            reg.active.postMessage(word.trim(), [channel.port2]);
+                            reg.active.postMessage({action: "exact", word: word.trim()}, [channel.port2]);
                         }
                     }
+
+                    document.getElementById("wordInput").addEventListener("input", async e => {
+                        var searchValue = e.target.value.trim();
+                        var infoElement = document.getElementById("wordInfo");
+                        
+                        if (searchValue == "") {
+                            infoElement.innerHTML = "";
+                            return;
+                        }
+
+                        return new Promise((resolve, reject) => {
+                            const channel = new MessageChannel();
+
+                            channel.port1.addEventListener("message", e => {
+                                if (e.data.action === "search") {
+                                    infoElement.innerHTML = "";
+                                    for (let result of e.data.words) {
+                                        showWord(result.word, result.entries);
+                                    }
+
+                                    resolve()
+                                }
+                            });
+
+                            channel.port1.start()
+                            reg.active.postMessage({action: "search", word: searchValue}, [channel.port2]);
+                        });
+                    });
                 });
             });
             

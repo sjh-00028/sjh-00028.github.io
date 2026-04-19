@@ -18,7 +18,7 @@ function readString(pos) {
 }
 
 function readEntry(pos) {
-    pos += 12
+    pos += 16
 
     let word = readString(pos)
     pos += byteLength(word) + 1
@@ -73,7 +73,7 @@ function findEntry(word) {
     let found = new Map()
 
     while (current != 0xFFFFFFFF) {
-        let currentWord = readString(current + 12)
+        let currentWord = readString(current + 16)
         if (found.has(currentWord))
             break
         if (currentWord.toLowerCase() == word.toLowerCase())
@@ -81,9 +81,45 @@ function findEntry(word) {
 
         found.set(currentWord)
         if (currentWord > word)
-            current = dataView.getUint32(current + 4)
-        else
             current = dataView.getUint32(current + 8)
+        else
+            current = dataView.getUint32(current + 12)
+    }
+
+    return null
+}
+
+function searchWord(word) {
+    let current = dataView.getUint32(0);
+    let found = new Map()
+
+    while (current != 0xFFFFFFFF) {
+        let currentWord = readString(current + 16)
+        if (found.has(currentWord))
+            break
+        if (currentWord.toLowerCase().startsWith(word.toLowerCase())) {
+            while (true) {
+                let previous = dataView.getUint32(current);
+
+                if (!readString(previous + 16).toLowerCase().startsWith(word.toLowerCase()))
+                    break;
+                current = previous;
+            }
+
+            let results = []
+            do {
+                results.push({word: readString(current + 16), entries: readEntry(current)});
+                current = dataView.getUint32(current + 4);
+            } while (results.length < 10 && current != 0xFFFFFFFF && readString(current + 16).toLowerCase().startsWith(word.toLowerCase()));
+
+            return results;
+        }
+
+        found.set(currentWord)
+        if (currentWord > word)
+            current = dataView.getUint32(current + 8)
+        else
+            current = dataView.getUint32(current + 12)
     }
 
     return null
@@ -100,8 +136,12 @@ const loadPromise = caches.open("words-cache").then(async wordsCache => {
 self.addEventListener("message", async e => {
     await loadPromise;
 
-    let word = e.data;
+    let word = e.data.word;
+    if (e.data.action == "exact") {
+        e.ports[0].postMessage({action: "exact", word: word, entries: findEntry(word)});
+    } else if (e.data.action == "search") {
+        e.ports[0].postMessage({action: "search", words: searchWord(word)});
+    }
 
     e.ports[0].start();
-    e.ports[0].postMessage({word: word, entries: findEntry(word)});
 });
