@@ -9,10 +9,10 @@
         <script>
             window.addEventListener("load", () => {
                 const params = new URLSearchParams(window.location.search);
-                const word = params.get("word").trim();
+                const word = params.get("word");
                 
                 if (word != null) {
-                    searchDictionary(word, true).then(result => {
+                    searchDictionary(word.trim(), true).then(result => {
                         showWord(result.word, result.entries);
                     });
                 }
@@ -31,8 +31,6 @@
                         for (let result of results) {
                             showWord(result.word, result.entries);
                         }
-
-                        resolve()
                     });
                 });
             });
