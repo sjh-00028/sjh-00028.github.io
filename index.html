@@ -8,26 +8,37 @@
 
         <script>
             window.addEventListener("load", () => {
+                const wordInput = document.getElementById("wordInput");
+                const infoElement = document.getElementById("wordInfo");
                 const params = new URLSearchParams(window.location.search);
                 const word = params.get("word");
                 
                 if (word != null) {
+                    wordInput.value = word;
+                    infoElement.innerHTML = "Searching...";
+
                     searchDictionary(word.trim(), true).then(result => {
+                        infoElement.innerHTML = "";
                         showWord(result.word, result.entries);
                     });
                 }
 
-                document.getElementById("wordInput").addEventListener("input", async e => {
+                wordInput.addEventListener("input", async e => {
                     var searchValue = e.target.value.trim();
-                    var infoElement = document.getElementById("wordInfo");
                     
                     if (searchValue == "") {
                         infoElement.innerHTML = "";
                         return;
                     }
 
+                    infoElement.innerHTML = "Searching...";
                     searchDictionary(searchValue, false).then(results => {
                         infoElement.innerHTML = "";
+                        if (results == null) {
+                            infoElement.innerHTML = "<h1>'" + searchValue + "' not found";
+                            return;
+                        }
+
                         for (let result of results) {
                             showWord(result.word, result.entries);
                         }
