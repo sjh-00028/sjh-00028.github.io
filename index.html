@@ -23,6 +23,7 @@
                     });
                 }
 
+                let isFirstSearch = true;
                 wordInput.addEventListener("input", async e => {
                     var searchValue = e.target.value.trim();
                     
@@ -31,7 +32,9 @@
                         return;
                     }
 
-                    infoElement.innerHTML = "Searching...";
+                    if (isFirstSearch)
+                        infoElement.innerHTML = "Searching...";
+                    
                     searchDictionary(searchValue, false).then(results => {
                         infoElement.innerHTML = "";
                         if (results == null) {
@@ -43,6 +46,8 @@
                             showWord(result.word, result.entries);
                         }
                     });
+
+                    isFirstSearch = false;
                 });
             });
             
