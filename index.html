@@ -34,7 +34,7 @@
 
                     if (isFirstSearch)
                         infoElement.innerHTML = "Searching...";
-                    
+
                     searchDictionary(searchValue, false).then(results => {
                         infoElement.innerHTML = "";
                         if (results == null) {
@@ -54,6 +54,13 @@
             window.onfocus = () => {
                 document.getElementById("wordInput").focus()
             };
+
+            window.onerror = (message, source, line, column, exception) => {
+                const errorMessage = document.createElement("p");
+
+                errorMessage.innerText = message + " (" + source + ":" + line + ":" + column + ")";
+                document.getElementById("errors").appendChild(errorMessage);
+            }
 
             function showWord(wordName, wordEntries) {
                 let infoElement = document.getElementById("wordInfo");
@@ -181,6 +188,10 @@
                 margin: 0px;
             }
 
+            #errors p {
+                color: #DB0200;
+            }
+
             h1,h3 {
                 margin: 0px;
             }
@@ -197,5 +208,6 @@
         </form>
         
         <div id="wordInfo"></div>
+        <div id="errors"></div>
     </body>
 </html>
