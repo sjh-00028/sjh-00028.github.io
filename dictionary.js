@@ -126,12 +126,9 @@ function searchWord(word) {
     return null
 }
 
-const loadPromise = caches.open("words-cache").then(async wordsCache => {
-    await wordsCache.add(wordsUrl);
-
-    let response = await wordsCache.match(wordsUrl);
+let loadPromise = fetch(wordsUrl).then(async response => {
     buffer = await response.arrayBuffer();
-    dataView = new DataView(buffer)
+    dataView = new DataView(buffer);
 });
 
 async function searchDictionary(word, exactSearch) {
